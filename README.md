@@ -3,7 +3,7 @@ This is the docker compose yaml I use to manage PiHole contianers on my home net
 
 |VLAN|Purpose|
 :-----|:--------
-|Trusted|Personal devices for my wife and I|
+|Trusted|Personal devices
 |Untrusted|IoT Devices (Echo, TV, etc)
 |Work|Company issued devices|
 |Guests|For people visiting our house|
