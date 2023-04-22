@@ -86,6 +86,46 @@ services:
       untrusted:
         ipv4_address: 10.0.1.156
 
+  pihole6:
+    container_name: pihole6
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      WEBPASSWORD: ${WEBPASSWORD}
+    volumes:
+     - './pihole6/etc-pihole:/etc/pihole'
+     - './pihole6/etc-dnqmasq.d:/etc/dnsmasq.d'
+     - './pihole6/var-log-pihole:/var/log/pihole'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    networks:
+      work:
+        ipv4_address: 10.0.2.155
+
+  pihole7:
+    container_name: pihole7
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      WEBPASSWORD: ${WEBPASSWORD}
+    volumes:
+     - './pihole7/etc-pihole:/etc/pihole'
+     - './pihole7/etc-dnqmasq.d:/etc/dnsmasq.d'
+     - './pihole7/log:/var/log/pihole'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    networks:
+      work:
+        ipv4_address: 10.0.2.156
+
 networks:
   trusted:
     name: trusted
@@ -107,4 +147,15 @@ networks:
       config:
       - subnet: '10.0.1.0/24'
         ip_range: '10.0.1.0/24'
-        gateway: '10.0.1.1'      
+        gateway: '10.0.1.1'
+
+  work:
+    name: work
+    driver: macvlan
+    driver_opts: 
+      parent: eth0.3
+    ipam:
+      config:
+      - subnet: '10.0.2.0/24'
+        ip_range: '10.0.2.0/24'
+        gateway: '10.0.2.1'        
