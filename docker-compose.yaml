@@ -32,9 +32,9 @@ services:
       TZ: America/Chicago
       WEBPASSWORD: ${WEBPASSWORD}
     volumes:
-     - './etc-pihole:/etc/pihole'
-     - './etc-dnqmasq.d:/etc/dnsmasq.d'
-     - './var-log-pihole:/var/log/pihole'
+     - './pihole3/etc-pihole:/etc/pihole'
+     - './pihole3/etc-dnqmasq.d:/etc/dnsmasq.d'
+     - './pihole3/var-log-pihole:/var/log/pihole'
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
@@ -42,12 +42,53 @@ services:
       - 127.0.0.1
       - 8.8.8.8
     networks:
-      dockervlan:
+      trusted:
         ipv4_address: 10.0.0.154
 
+  pihole4:
+    container_name: pihole4
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      WEBPASSWORD: ${WEBPASSWORD}
+    # Volumes store your data between container upgrades
+    volumes:
+     - './pihole4/etc-pihole:/etc/pihole'
+     - './pihole4/etc-dnqmasq.d:/etc/dnsmasq.d'
+     - './pihole4/var-log-pihole:/var/log/pihole'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    networks:
+      untrusted:
+        ipv4_address: 10.0.1.155
+
+  pihole5:
+    container_name: pihole5
+    image: pihole/pihole:latest
+    environment:
+      TZ: America/Chicago
+      WEBPASSWORD: ${WEBPASSWORD}
+    volumes:
+     - './pihole5/etc-pihole:/etc/pihole'
+     - './pihole5/etc-dnqmasq.d:/etc/dnsmasq.d'
+     - './pihole5/var-log-pihole:/var/log/pihole'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    dns:
+      - 127.0.0.1
+      - 8.8.8.8
+    networks:
+      untrusted:
+        ipv4_address: 10.0.1.156
+
 networks:
-  dockervlan:
-    name: dockervlan
+  trusted:
+    name: trusted
     driver: macvlan
     driver_opts: 
       parent: eth0
@@ -56,3 +97,14 @@ networks:
       - subnet: '10.0.0.0/24'
         ip_range: '10.0.0.0/24'
         gateway: '10.0.0.1'
+
+  untrusted:
+    name: untrusted
+    driver: macvlan
+    driver_opts: 
+      parent: eth0.2
+    ipam:
+      config:
+      - subnet: '10.0.1.0/24'
+        ip_range: '10.0.1.0/24'
+        gateway: '10.0.1.1'      
